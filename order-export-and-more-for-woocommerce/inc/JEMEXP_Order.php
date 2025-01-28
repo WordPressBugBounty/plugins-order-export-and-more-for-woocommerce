@@ -1657,7 +1657,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
 
         fclose($file);
 
-
+        unlink($this->tempFileName);
     }
 
 
