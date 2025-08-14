@@ -22,9 +22,8 @@ class JEMEXP_Data_Engine{
         $field = $post['field'];
 
         //ok let's get all the values for this field
-        $sql = $wpdb->prepare("SELECT DISTINCT meta_value FROM  {$wpdb->postmeta} m inner join {$wpdb->posts} p on m.post_id=p.ID where p.post_type='shop_order' and m.meta_key = %s  ", $field);
 
-        $result = $wpdb->get_col($sql);
+        $result = $wpdb->get_col($wpdb->prepare("SELECT DISTINCT meta_value FROM  {$wpdb->postmeta} m inner join {$wpdb->posts} p on m.post_id=p.ID where p.post_type='shop_order' and m.meta_key = %s  ", $field)); //phpcs:ignore
 
         apply_filters('jemx_get_order_filter_values', $result);
 
@@ -49,9 +48,8 @@ class JEMEXP_Data_Engine{
         //$query = '%' . $query . '%';
 
         //ok let's get all the values for this field
-        $sql = $wpdb->prepare("SELECT ID as id, post_title as text FROM {$wpdb->posts} WHERE post_type='product' and post_title LIKE %s",'%' .$wpdb->esc_like( $post['q'] ) . '%');
-
-        $result = $wpdb->get_results($sql);
+        
+        $result = $wpdb->get_results($wpdb->prepare("SELECT ID as id, post_title as text FROM {$wpdb->posts} WHERE post_type='product' and post_title LIKE %s",'%' .$wpdb->esc_like( $post['q'] ) . '%')); //phpcs:ignore
 
         apply_filters('jemx_get_product_filter_values', $result);
 
@@ -129,7 +127,7 @@ class JEMEXP_Data_Engine{
     public function get_order_basic_meta(){
         global $wpdb;
 
-        $fields = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->posts} INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id WHERE post_type = 'shop_order'");
+        $fields = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->posts} INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id WHERE post_type = 'shop_order'"); //phpcs:ignore
 
         natsort($fields);
 
@@ -147,7 +145,7 @@ class JEMEXP_Data_Engine{
 
         global $wpdb;
 
-        $fields = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->prefix}woocommerce_order_itemmeta a INNER JOIN {$wpdb->prefix}woocommerce_order_items b ON a.order_item_id = b.order_item_id WHERE b.order_item_type='line_item'");
+        $fields = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->prefix}woocommerce_order_itemmeta a INNER JOIN {$wpdb->prefix}woocommerce_order_items b ON a.order_item_id = b.order_item_id WHERE b.order_item_type='line_item'"); //phpcs:ignore
 
         sort($fields, SORT_NATURAL | SORT_FLAG_CASE);
 
@@ -173,7 +171,7 @@ class JEMEXP_Data_Engine{
     public function get_order_product_meta(){
         global $wpdb;
 
-        $fields = $wpdb->get_col( "select distinct meta_key from {$wpdb->postmeta} m INNER JOIN {$wpdb->posts} p on m.post_id = p.ID WHERE post_type IN ('product','product_variation')" );
+        $fields = $wpdb->get_col( "select distinct meta_key from {$wpdb->postmeta} m INNER JOIN {$wpdb->posts} p on m.post_id = p.ID WHERE post_type IN ('product','product_variation')" ); //phpcs:ignore
 
         sort($fields);
 
@@ -188,7 +186,7 @@ class JEMEXP_Data_Engine{
     public function get_order_user_fields(){
         global $wpdb;
 
-        $fields = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->posts} p INNER JOIN {$wpdb->usermeta} m ON p.post_author = m.user_id WHERE p.post_type = 'shop_order'" );
+        $fields = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->posts} p INNER JOIN {$wpdb->usermeta} m ON p.post_author = m.user_id WHERE p.post_type = 'shop_order'" ); //phpcs:ignore
         sort($fields);
 
         $ret = apply_filters('jemxp_get_order_user_fields', $fields);
@@ -203,7 +201,7 @@ class JEMEXP_Data_Engine{
     public function get_order_coupon_fields(){
         global $wpdb;
 
-        $fields = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->posts} p INNER JOIN  {$wpdb->postmeta} m ON p.ID=m.post_id  WHERE post_type = 'shop_coupon'" );
+        $fields = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->posts} p INNER JOIN  {$wpdb->postmeta} m ON p.ID=m.post_id  WHERE post_type = 'shop_coupon'" ); //phpcs:ignore
         sort($fields);
 
         $ret = apply_filters('jemxp_get_order_coupon_fields', $fields);
@@ -220,7 +218,7 @@ class JEMEXP_Data_Engine{
     public function get_meta_for_order($id){
         global $wpdb;
 
-        $rows = $wpdb->get_results($wpdb->prepare("SELECT m.* FROM {$wpdb->postmeta} m, {$wpdb->posts} p  WHERE p.ID =%d and m.post_id = p.ID", $id), ARRAY_A);
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT m.* FROM {$wpdb->postmeta} m, {$wpdb->posts} p  WHERE p.ID =%d and m.post_id = p.ID", $id), ARRAY_A); //phpcs:ignore
 
         $ret = apply_filters('jemxp_get_meta_for_order', $rows);
 

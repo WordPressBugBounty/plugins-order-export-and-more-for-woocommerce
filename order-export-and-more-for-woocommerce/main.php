@@ -3,7 +3,7 @@
 Plugin Name: Order Export for WooCommerce
 Plugin URI: https://www.jem-products.com/
 Description: Export WooCommerce orders, products, and other data.
-Version: 3.25
+Version: 3.26
 Author: JEM Plugins
 Author URI: https://www.jem-products.com/
 Text Domain: order-export-and-more-for-woocommerce
@@ -78,17 +78,15 @@ require_once JEMEXP_PLUGIN_PATH . 'inc/category.php';
 require_once JEMEXP_PLUGIN_PATH . 'inc/JEMEXP_Data_Engine.php';
 require_once JEMEXP_PLUGIN_PATH . 'inc/JEMEXP_Order.php';
 
-// And an order object
-$order = new JEMEXP_Order(new JEMEXP_Export_Data());
+
 
 /**
  * Loads the right js & css assets
  */
-function jemexp_load_scripts()
+function jemexp_load_scripts($hook)
 {
-
     // Only enqueue/load if we are on our page
-    if (!isset($_GET['page']) || ($_GET['page'] != 'JEMEXP_MENU')) {
+    if (!isset($hook) || $hook != 'woocommerce_page_JEMEXP_MENU') {
         return;
     }
 
@@ -153,5 +151,7 @@ add_action('woocommerce_init', 'jemexp_instantiate_export');
 
 function jemexp_instantiate_export()
 {
+    // And an order object
+    $order = new JEMEXP_Order(new JEMEXP_Export_Data());
     $jemexporter_lite = new JEMEXP_lite();
 }

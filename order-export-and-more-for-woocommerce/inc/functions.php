@@ -106,40 +106,40 @@ function jemx_predefined_date_ranges_data()
     $pre_ranges = array();
 
     // Today date ranges
-    $today_date = date('Y-m-d', current_time('timestamp', 0));
+    $today_date = gmdate('Y-m-d', current_time('timestamp', 0));
     $pre_ranges['today']['start_date'] = $today_date;
     $pre_ranges['today']['end_date'] = $today_date;
 
     // Yesterday date ranges
-    $yesterday_date = date('Y-m-d', current_time('timestamp', 0) - (60 * 60 * 24));
+    $yesterday_date = gmdate('Y-m-d', current_time('timestamp', 0) - (60 * 60 * 24));
     $pre_ranges['yesterday']['start_date'] = $yesterday_date;
     $pre_ranges['yesterday']['end_date'] = $yesterday_date;
 
     // This week date ranges
     $last_sunday = strtotime("last sunday");
-    $sunday = date('w', $last_sunday) == date('w') ? $last_sunday + 7 * 86400 : $last_sunday;
-    $pre_ranges['thisweek']['start_date'] = date("Y-m-d", $sunday);
+    $sunday = gmdate('w', $last_sunday) == gmdate('w') ? $last_sunday + 7 * 86400 : $last_sunday;
+    $pre_ranges['thisweek']['start_date'] = gmdate("Y-m-d", $sunday);
     $pre_ranges['thisweek']['end_date'] = $today_date;
 
     // Last week date ranges
     $lastweek_sun = $last_sunday - 7 * 86400;
-    $lastweek_sat = strtotime(date("Y-m-d", $lastweek_sun) . " +6 days");
-    $pre_ranges['lastweek']['start_date'] = date("Y-m-d", $lastweek_sun);
-    $pre_ranges['lastweek']['end_date'] = date("Y-m-d", $lastweek_sat);
+    $lastweek_sat = strtotime(gmdate("Y-m-d", $lastweek_sun) . " +6 days");
+    $pre_ranges['lastweek']['start_date'] = gmdate("Y-m-d", $lastweek_sun);
+    $pre_ranges['lastweek']['end_date'] = gmdate("Y-m-d", $lastweek_sat);
 
     // Month to date ranges
-    $pre_ranges['monthtodate']['start_date'] = date('Y-m-01', current_time('timestamp', 0));
+    $pre_ranges['monthtodate']['start_date'] = gmdate('Y-m-01', current_time('timestamp', 0));
     $pre_ranges['monthtodate']['end_date'] = $today_date;
 
     // Last month date ranges
-    $first_day_current_month = strtotime(date('Y-m-01', current_time('timestamp', 0)));
-    $lastmonth_start_date = date('Y-m-01', strtotime('-1 DAY', $first_day_current_month));
-    $lastmonth_end_date = date('Y-m-t', strtotime('-1 DAY', $first_day_current_month));
+    $first_day_current_month = strtotime(gmdate('Y-m-01', current_time('timestamp', 0)));
+    $lastmonth_start_date = gmdate('Y-m-01', strtotime('-1 DAY', $first_day_current_month));
+    $lastmonth_end_date = gmdate('Y-m-t', strtotime('-1 DAY', $first_day_current_month));
     $pre_ranges['lastmonth']['start_date'] = $lastmonth_start_date;
     $pre_ranges['lastmonth']['end_date'] = $lastmonth_end_date;
 
     // Year to date ranges
-    $pre_ranges['yeartodate']['start_date'] = date('Y-01-01', current_time('timestamp', 0));
+    $pre_ranges['yeartodate']['start_date'] = gmdate('Y-01-01', current_time('timestamp', 0));
     $pre_ranges['yeartodate']['end_date'] = $today_date;
 
     return $pre_ranges;

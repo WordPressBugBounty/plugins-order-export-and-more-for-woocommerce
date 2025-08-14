@@ -34,7 +34,6 @@ class JEMEXP_lite
         add_action('admin_menu', array($this, 'add_to_menu'));
 
         add_action('admin_enqueue_scripts', array(&$this, 'load_scripts'));
-        add_action('admin_post_export_data', array(&$this, 'export_data'));
 
         // handles the form post for the SETTINGS
         add_action('wp_ajax_JEMEXP_save_settings', array(&$this, 'save_settings'));
@@ -92,7 +91,7 @@ class JEMEXP_lite
 
         if (isset($_REQUEST['type'])) {
 
-            $method = sanitize_text_field($_REQUEST['type']);
+            $method = sanitize_text_field(wp_unslash($_REQUEST['type'] ?? ''));
 
             if (method_exists('JEMEXP_Data_Engine', $method)) {
 
@@ -404,15 +403,17 @@ class JEMEXP_lite
      */
     public function render_settings()
     {
+        //phpcs:ignore nonce not needed
+        
         // get the main tab
-        $tab = isset($_REQUEST['tab']) ? sanitize_text_field($_REQUEST['tab']) : 'export';
+        $tab = isset($_REQUEST['tab']) ? sanitize_text_field(wp_unslash($_REQUEST['tab'] ?? '')) : 'export'; //phpcs:ignore
 
         // get the sub-tab
-        $subTab = isset($_REQUEST['sub-tab']) ? sanitize_text_field($_REQUEST['sub-tab']) : 'fields';
+        $subTab = isset($_REQUEST['sub-tab']) ? sanitize_text_field(wp_unslash($_REQUEST['sub-tab'] ?? '')) : 'fields'; //phpcs:ignore
 
         // are we editing an entity? if not default to Order
         // TODO we should prolly take this out
-        $entity = isset($_REQUEST['entity']) ? sanitize_text_field($_REQUEST['entity']) : 'Order';
+        $entity = isset($_REQUEST['entity']) ? sanitize_text_field(wp_unslash($_REQUEST['entity'] ?? '')) : 'Order'; //phpcs:ignore
 
         // set the active tabs to blank
         $export_active   = '';
@@ -535,9 +536,10 @@ class JEMEXP_lite
      */
     function generate_meta_tab()
     {
+        //phpcs:ignore nonce not needed as it can be accesed directly
         // ok so lets get the meta data for this id
-        $meta_id   = isset($_REQUEST['meta-id']) ? sanitize_text_field($_REQUEST['meta-id']) : '';
-        $meta_type = isset($_REQUEST['meta-type']) ? sanitize_text_field($_REQUEST['meta-type']) : '';
+        $meta_id   = sanitize_text_field(wp_unslash($_REQUEST['meta-id'] ?? '')); //phpcs:ignore 
+        $meta_type = sanitize_text_field(wp_unslash($_REQUEST['meta-type'] ?? '')); //phpcs:ignore
 
         $meta_data = get_post_meta($meta_id);
 
@@ -604,11 +606,10 @@ class JEMEXP_lite
             global $wpdb;
 
             $line_item_html  = '<h2>Order Line Item Meta</h2>';
-            $order_items_sql = $wpdb->prepare('SELECT `order_item_id` as id, `order_item_name` as name, `order_item_type` as type FROM `' . $wpdb->prefix . 'woocommerce_order_items` WHERE `order_id` = %d', $meta_id);
-            if ($order_items = $wpdb->get_results($order_items_sql)) {
+            
+            if ($order_items = $wpdb->get_results($wpdb->prepare('SELECT `order_item_id` as id, `order_item_name` as name, `order_item_type` as type FROM `' . $wpdb->prefix . 'woocommerce_order_items` WHERE `order_id` = %d', $meta_id))) { //phpcs:ignore
                 foreach ($order_items as $key => $order_item) {
-                    $order_itemmeta_sql        = $wpdb->prepare('SELECT `meta_key`, `meta_value` FROM `' . $wpdb->prefix . 'woocommerce_order_itemmeta` AS order_itemmeta WHERE `order_item_id` = %d ORDER BY `order_itemmeta`.`meta_key` ASC', $order_item->id);
-                    $order_items[$key]->meta = $wpdb->get_results($order_itemmeta_sql);
+                    $order_items[$key]->meta = $wpdb->get_results($wpdb->prepare('SELECT `meta_key`, `meta_value` FROM `' . $wpdb->prefix . 'woocommerce_order_itemmeta` AS order_itemmeta WHERE `order_item_id` = %d ORDER BY `order_itemmeta`.`meta_key` ASC', $order_item->id));
                 }
 
                 // ok we should now have a nice set of items/meta, meta
@@ -730,7 +731,7 @@ class JEMEXP_lite
         }
 
         // We simply save the object in a transient
-        $jsonFix = stripcslashes(urldecode(sanitize_text_field($_POST['settings'])));
+        $jsonFix = stripcslashes(urldecode(sanitize_text_field(wp_unslash($_POST['settings'] ?? ''))));
 
         $data = new JEMEXP_Export_Data();
 
@@ -763,195 +764,6 @@ class JEMEXP_lite
         wp_send_json($result);
 
         return;
-    }
-
-
-    // TODO does this even get called any more?
-    /**
-     *
-     * This handles the export of the data
-     * * gets called automagically by the submit of the form
-     */
-    function export_data()
-    {
-        // code for save labels
-        // lets update any of the labels!
-        // first get the entity we are edting
-        $ent = (isset($_POST['entity-being-edited'])) ? sanitize_text_field($_POST['entity-being-edited']) : '';
-
-        if ($ent === '') {
-            // no entity being edited
-            wp_safe_redirect(urldecode(sanitize_text_field($_POST['_wp_http_referer'])));
-        }
-
-        // the name of the labels
-        $nm     = $ent . '_labels';
-        $labels = (isset($_POST[$nm])) ? array_filter($this->sanitize_array($_POST[$nm])) : array();
-
-        // And update we go
-        update_option(JEMEXP_DOMAIN . '_' . $ent . '_labels', $labels);
-
-        // load settings
-        $this->settings = jemxp_get_settings();
-
-        $output_fileName = $this->settings['filename'];
-
-        // first get the entity we are exporting
-        $ent = (isset($_POST['entity-to-export'])) ? sanitize_text_field($_POST['entity-to-export']) : '';
-
-        if ($ent === '') {
-            // no entity being edited
-            wp_safe_redirect(urldecode(sanitize_text_field($_POST['_wp_http_referer'])));
-            return;
-        }
-
-        // update the referrer with the entity & sub-tab if approp
-
-        // Sub tab depnds on which submit buttion was pressed!
-        $subTab = (isset($_POST['filter-override'])) ? sanitize_text_field($_POST['filter-override']) : '';
-        if ($subTab != 'filters') {
-            $subTab = 'fields';
-        }
-
-        $url = add_query_arg(
-            array(
-                'tab'     => 'export',
-                'sub-tab' => $subTab,
-                'entity'  => $ent,
-            ),
-            urldecode(sanitize_text_field($_POST['_wp_http_referer']))
-        );
-
-        // if no object redirects
-        if (!isset($this->objects[$ent])) {
-
-            // hmmmmm no entity exists - something screwey happened!
-
-            wp_safe_redirect(urldecode($url));
-            return;
-        }
-
-        // get the entity
-        $obj = $this->objects[$ent];
-
-        // lets get the field list to display and put it in the entity object
-        $temp = $ent . '_fields';
-        if (isset($_POST[$temp])) {
-            $fields_to_export = $this->sanitize_array($_POST[$temp]);
-        } else {
-            // No fields to export so display an error message and return
-
-            $this->save_admin_messages(__('You have not selected any fields to export', 'order-export-and-more-for-woocommerce'), 'error');
-
-            wp_safe_redirect(urldecode($url));
-            return;
-        }
-
-        $obj->fields_to_export = $fields_to_export;
-
-        // if we have it, add in the meta, order product and order product meta
-        if (isset($_POST[$ent . '_meta'])) {
-            $obj->meta = $this->sanitize_array($_POST[$ent . '_meta']);
-        }
-
-        if (isset($_POST[$ent . '_product'])) {
-            $obj->product = $this->sanitize_array($_POST[$ent . '_product']);
-        }
-        if (isset($_POST[$ent . '_item_meta'])) {
-            $obj->item_meta = $this->sanitize_array($_POST[$ent . '_item_meta']);
-        }
-
-        // if we have it, add in the custom attributes
-        if (isset($_POST[$ent . '_custom'])) {
-            $obj->custom = $this->sanitize_array($_POST[$ent . '_custom']);
-        }
-
-        // load the user settings into the object
-        $obj->settings = $this->settings;
-
-        // lets get the appropriate filters for this entity
-        $ret = $obj->extract_filters($this->sanitize_array($_POST));
-
-        // did we get an error?
-        if ($ret != '') {
-
-            $this->save_admin_messages($ret, 'error');
-
-            wp_safe_redirect(urldecode($url));
-            return;
-        }
-
-        // create the file name - this is the name stored on our server
-        $dir      = wp_upload_dir();
-        $fileName = $dir['basedir'] . '/JEM_csv_export.csv';
-
-        $file = fopen($fileName, 'w+');
-
-        // if we have a time limit then lets use it
-        if ($this->settings['timeLimit'] != '') {
-            set_time_limit($this->settings['timeLimit']);
-        }
-
-        // ok we have an object - lets execute the darn query!
-        $ret = $obj->run_query($file);
-
-        // 1.4.5 - added this to close file - was causing rare issues
-        fclose($file);
-
-        if ($ret === false) {
-            $this->save_admin_messages(__('No records were found - please modify the filters and try again', 'order-export-and-more-for-woocommerce'), 'error');
-
-            fclose($file);
-            // delete it
-            $r = unlink($fileName);
-            if (!$r) {
-                // unlink failed
-                $this->save_admin_messages(__('There was a problem deleting the temporary file - please try again', 'order-export-and-more-for-woocommerce'), 'error');
-            }
-
-            wp_safe_redirect(urldecode($url));
-            return;
-        }
-
-        // rename the file to the format specified
-        // now download the CSV file...
-
-        if (file_exists($fileName)) {
-
-            $output_fileName = str_replace('{{date}}', date('Y_m_d'), $output_fileName);
-            $output_fileName = str_replace('{{time}}', date('H_i_s'), $output_fileName);
-            $output_fileName = str_replace('{{type}}', $obj->id, $output_fileName);
-
-            $file     = fopen($fileName, 'r');
-            $contents = fread($file, filesize($fileName));
-            $r        = fclose($file);
-
-            // delete the file
-            $r = unlink(realpath($fileName));
-
-            if (!$r) {
-                // unlink failed
-                $this->save_admin_messages(__('There was a problem deleting the temporary file - please try again', 'order-export-and-more-for-woocommerce'), 'error');
-
-                wp_safe_redirect(urldecode($url));
-                return;
-            }
-
-            // funky headers!
-            // TODO - put this in a function - need to work out how to handle non-western characters etc
-            // http://www.andrew-kirkpatrick.com/2013/08/output-csv-straight-to-browser-using-php/ with some mods
-            header('Expires: 0');
-            header('Pragma: no-cache');
-            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-            header('Cache-Control: private', false);
-            header('Content-type: text/csv');
-            header("Content-Disposition: attachment; filename=$output_fileName.csv");
-
-            // now write it out
-            $file = @fopen('php://output', 'w');
-            fwrite($file, $contents);
-            fclose($file);
-        }
     }
 
 

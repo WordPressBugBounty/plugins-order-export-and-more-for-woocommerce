@@ -48,9 +48,9 @@ if (!defined('ABSPATH')) {
     </div>
 
     <ul class="nav nav-pills">
-        <li class="nav-item"><a class="nav-link <?php esc_attr_e($export_active); ?>" role="presentation" href="<?php esc_attr_e($adminPageURL); ?>&tab=export"><?php echo esc_html__('Export Data', 'order-export-and-more-for-woocommerce'); ?></a></li>
-        <li class="nav-item"><a class="nav-link <?php esc_attr_e($settings_active); ?>" role="presentation" href="<?php esc_attr_e($adminPageURL); ?>&tab=settings"><?php echo esc_html__('Settings', 'order-export-and-more-for-woocommerce'); ?></a></li>
-        <li class="nav-item"><a class="nav-link <?php esc_attr_e($schedule_active); ?>" role="presentation" href="<?php esc_attr_e($adminPageURL); ?>&tab=schedule"><?php echo esc_html__('Scheduled Exports', 'order-export-and-more-for-woocommerce'); ?></a></li>
+        <li class="nav-item"><a class="nav-link <?php echo esc_attr($export_active); ?>" role="presentation" href="<?php echo esc_url($adminPageURL); ?>&tab=export"><?php echo esc_html__('Export Data', 'order-export-and-more-for-woocommerce'); ?></a></li>
+        <li class="nav-item"><a class="nav-link <?php echo esc_attr($settings_active); ?>" role="presentation" href="<?php echo esc_url($adminPageURL); ?>&tab=settings"><?php echo esc_html__('Settings', 'order-export-and-more-for-woocommerce'); ?></a></li>
+        <li class="nav-item"><a class="nav-link <?php echo esc_attr($schedule_active); ?>" role="presentation" href="<?php echo esc_url($adminPageURL); ?>&tab=schedule"><?php echo esc_html__('Scheduled Exports', 'order-export-and-more-for-woocommerce'); ?></a></li>
         <li class="nav-item nav-item-pro"><a data-pro-feature="tab" class="nav-link open-jem-pro-dialog" role="presentation" href="#"><?php echo esc_html__('PRO', 'order-export-and-more-for-woocommerce'); ?></a></li>
     </ul>
 

@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
         <input type="submit" name="submit" id="submit" class="btn btn-primary jem-dark-blue" value="View Meta">
     </p>
     <input type="hidden" name="action" value="update_meta">
-    <input type="hidden" name="_wp_http_referer" value="<?php esc_attr_e(urlencode($_SERVER['REQUEST_URI'])); ?>">
+    <input type="hidden" name="_wp_http_referer" value="<?php echo urlencode(sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'] ?? '' ))); ?>">
 <?php
     if($this->message != ""){
         JEMEXP_lite::wp_kses_wf($this->message);

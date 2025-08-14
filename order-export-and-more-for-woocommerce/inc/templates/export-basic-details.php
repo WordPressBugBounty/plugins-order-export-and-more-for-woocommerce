@@ -63,10 +63,10 @@ $data = $this->settings;
                             <span class="input-group-text"><?php esc_attr_e('DATE FORMAT', 'order-export-and-more-for-woocommerce'); ?> <i class="tooltip_icon fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="How do you want the dates to appear?"></i></span>
                         </div>
                         <select class="form-control jem-input-group-addon" id="date-format">
-                            <option value="F j, Y" <?php selected(@$data->getDateFormat(), 'F j, Y'); ?>><?php esc_attr_e(current_time('F j, Y')); ?></option>
-                            <option value="Y/m/d" <?php selected(@$data->getDateFormat(), 'Y/m/d'); ?>><?php esc_attr_e(current_time('Y/m/d')); ?></option>
-                            <option value="m/d/Y" <?php selected(@$data->getDateFormat(), 'm/d/Y'); ?>><?php esc_attr_e(current_time('m/d/Y')); ?></option>
-                            <option value="d/m/Y" <?php selected(@$data->getDateFormat(), 'd/m/Y'); ?>><?php esc_attr_e(current_time('d/m/Y')); ?></option>
+                            <option value="F j, Y" <?php selected(@$data->getDateFormat(), 'F j, Y'); ?>><?php echo esc_attr(current_time('F j, Y')); ?></option>
+                            <option value="Y/m/d" <?php selected(@$data->getDateFormat(), 'Y/m/d'); ?>><?php echo esc_attr(current_time('Y/m/d')); ?></option>
+                            <option value="m/d/Y" <?php selected(@$data->getDateFormat(), 'm/d/Y'); ?>><?php echo esc_attr(current_time('m/d/Y')); ?></option>
+                            <option value="d/m/Y" <?php selected(@$data->getDateFormat(), 'd/m/Y'); ?>><?php echo esc_attr(current_time('d/m/Y')); ?></option>
                         </select>
                     </div>
                 </div>
@@ -76,9 +76,9 @@ $data = $this->settings;
                             <span class="input-group-text"><?php esc_attr_e('TIME FORMAT', 'order-export-and-more-for-woocommerce'); ?></span>
                         </div>
                         <select class="form-control jem-input-group-addon" id="time-format">
-                            <option value="g:i a" <?php selected(@$data->getTimeFormat(), 'g:i m'); ?>><?php esc_attr_e(current_time('g:i a')); ?></option>
-                            <option value="g:i A" <?php selected(@$data->getTimeFormat(), 'g:i A'); ?>><?php esc_attr_e(current_time('g:i A')); ?></option>
-                            <option value="H:i" <?php selected(@$data->getTimeFormat(), 'H:i'); ?>><?php esc_attr_e(current_time('H:i')); ?></option>
+                            <option value="g:i a" <?php selected(@$data->getTimeFormat(), 'g:i m'); ?>><?php echo esc_attr(current_time('g:i a')); ?></option>
+                            <option value="g:i A" <?php selected(@$data->getTimeFormat(), 'g:i A'); ?>><?php echo esc_attr(current_time('g:i A')); ?></option>
+                            <option value="H:i" <?php selected(@$data->getTimeFormat(), 'H:i'); ?>><?php echo esc_attr(current_time('H:i')); ?></option>
                         </select>
                     </div>
                 </div>
@@ -89,7 +89,7 @@ $data = $this->settings;
                         <div class="jem-input-group-addon input-group-prepend">
                             <span class="input-group-text"><?php esc_attr_e('FILENAME', 'order-export-and-more-for-woocommerce'); ?> <i class="tooltip_icon fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="What do you want to call the file - don't forget the extension eg .csv"></i></span>
                         </div>
-                        <input type="text" class="form-control jem-input-group-addon " id="filename" size="35" value="<?php esc_attr_e($data->getFilename()); ?>">
+                        <input type="text" class="form-control jem-input-group-addon " id="filename" size="35" value="<?php echo esc_attr($data->getFilename()); ?>">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -114,7 +114,7 @@ $data = $this->settings;
                         <div class="jem-input-group-addon input-group-prepend">
                             <span class="input-group-text"><?php esc_attr_e('FIELD DELIMITER', 'order-export-and-more-for-woocommerce'); ?> <i class="tooltip_icon fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="What character do you want to use to seperate the columns in the export?"></i></span>
                         </div>
-                        <input type="text" class="form-control jem-input-group-addon " id="delimiter" size="5" value="<?php esc_attr_e($data->getDelimiter()); ?> ">
+                        <input type="text" class="form-control jem-input-group-addon " id="delimiter" size="5" value="<?php echo esc_attr($data->getDelimiter()); ?> ">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -122,7 +122,7 @@ $data = $this->settings;
                         <div class="jem-input-group-addon input-group-prepend">
                             <span class="input-group-text"><?php esc_attr_e('LINE BREAK', 'order-export-and-more-for-woocommerce'); ?> <i class="tooltip_icon fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="If you don't understand this then you should probably not change it"></i></span>
                         </div>
-                        <input type="text" class="form-control jem-input-group-addon " id="linebreak" size="5" value="<?php esc_attr_e($data->getLineBreak()); ?>">
+                        <input type="text" class="form-control jem-input-group-addon " id="linebreak" size="5" value="<?php echo esc_attr($data->getLineBreak()); ?>">
                     </div>
                 </div>
             </div>
@@ -177,7 +177,7 @@ $data = $this->settings;
                                     <span class="input-group-text"><?php esc_attr_e('STARTING AFTER ORDER #', 'order-export-and-more-for-woocommerce'); ?> <i class="tooltip_icon fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="What order number should the export start from (it wil start with the NEXT order)"></i></span>
                                 </div>
 
-                                <input type="text" class="form-control jem-input-group-addon " id="starting-order-number" size="9" value="<?php esc_attr_e($data->getStartingFromNum()); ?> ">
+                                <input type="text" class="form-control jem-input-group-addon " id="starting-order-number" size="9" value="<?php echo esc_attr($data->getStartingFromNum()); ?> ">
                             </div>
                         </div>
                     </div>

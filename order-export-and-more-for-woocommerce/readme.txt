@@ -3,7 +3,7 @@ Contributors: merlinmonmouth, webfactory
 Tags: export, woocommerce export, export orders, export products, orders export
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 3.25
+Stable tag: 3.26
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires PHP: 5.4
@@ -77,6 +77,10 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 
 == Changelog ==
+= 3.26 =
+* 2025-08-13
+* minor code fixes
+
 = 3.25 =
 * 2025-01-28
 * temporary export file is now deleted after download

@@ -133,7 +133,7 @@ $data = $settings;
             $cls = '';
         }
         ?>
-        <div class="row <?php esc_attr_e($cls); ?>">
+        <div class="row <?php echo esc_attr($cls); ?>">
             <div class="col-md-9">
                 <div class="ordr_condi__headr">
                     <div class="col-md-3 col-sm-3">
@@ -193,15 +193,15 @@ function generate_fba_item($display = false, $id = 'fba-template-item', $label =
         $display = 'display: none;';
     }
 ?>
-    <div id="<?php esc_attr_e($id); ?>" style="<?php esc_attr_e($display); ?>">
+    <div id="<?php echo esc_attr($id); ?>" style="<?php echo esc_attr($display); ?>">
         <div class="row jem-order-field-filter-item" style="padding-top:0px!important">
             <div class="col-md-9">
                 <div class="form-horizontal">
                     <div class="ordr_condi_output">
-                        <div class="col-sm-3 field-name first_col_ordr"><B><?php esc_attr_e($label); ?></B></div>
-                        <div class="col-sm-3 condition" value="<?php esc_attr_e($condition); ?>"><?php esc_attr_e($conditionLabel); ?>
+                        <div class="col-sm-3 field-name first_col_ordr"><B><?php echo esc_attr($label); ?></B></div>
+                        <div class="col-sm-3 condition" value="<?php echo esc_attr($condition); ?>"><?php echo esc_attr($conditionLabel); ?>
                         </div>
-                        <div class="col-sm-3 value"><?php esc_attr_e($value); ?>
+                        <div class="col-sm-3 value"><?php echo esc_attr($value); ?>
                         </div>
                         <div class="col-sm-3 last_ordr_col">
                             <a class="btn icon-btn btn-danger jem-remove-order-filter-item" href="#">
@@ -209,9 +209,9 @@ function generate_fba_item($display = false, $id = 'fba-template-item', $label =
                                 Delete
                             </a>
                         </div>
-                        <input type="hidden" class="jem-form-type" value="<?php esc_attr_e($value); ?>">
-                        <input type="hidden" class="jem-form-data-type" value="<?php esc_attr_e($type); ?>">
-                        <input type="hidden" class="jem-form-name" value="<?php esc_attr_e($name); ?>">
+                        <input type="hidden" class="jem-form-type" value="<?php echo esc_attr($value); ?>">
+                        <input type="hidden" class="jem-form-data-type" value="<?php echo esc_attr($type); ?>">
+                        <input type="hidden" class="jem-form-name" value="<?php echo esc_attr($name); ?>">
                     </div>
                 </div>
             </div>

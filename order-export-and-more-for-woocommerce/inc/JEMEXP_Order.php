@@ -962,206 +962,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
             $args['date_query'] = $dateFilters;
         }
 
-        //************************
-        // PRODUCTS FILTERS
-        //************************
-
-        //any products??
-        //if (isset($this->exportParams['order_settings']['product_filter']) && count($this->exportParams['order_settings']['product_filter']) > 0) {
-        if (count($this->settings->getProductFilter()) > 0) {
-
-            //Get the product ID's
-            $ids = array_column($this->settings->getProductFilter(), 'id');
-
-            $a = implode(",", $ids);
-
-            $order_ids = $this->get_orders_for_products($a);
-
-            if (is_array($order_ids)) {
-                $args['post__in'] = $order_ids;
-
-            }
-        }
-
-        //************************
-        // PRODUCT CATEGORY FILTERS
-        //************************
-
-        //any category filters??
-        //if (isset($this->exportParams['order_settings']['category_filter']) && count($this->exportParams['order_settings']['category_filter']) > 0) {
-        if (count($this->settings->getCategoryFilter()) > 0) {
-
-            //Get the category IDs
-            $ids = array_column($this->settings->getCategoryFilter(), 'id');
-
-            $a = implode(",", $ids);
-
-            $order_ids = $this->get_orders_for_categories($a);
-
-            if (is_array($order_ids)) {
-
-                //There could also be some posts from Porduct
-                if (isset($args['post__in']) && is_array($args['post__in'])) {
-                    $args['post__in'] = array_merge($args['post__in'], $order_ids);
-                    $args['post__in'] = array_unique($args['post__in']);
-                } else {
-                    $args['post__in'] = $order_ids;
-
-                }
-
-            }
-        }
-
-        //************************
-        // COUPONS FILTERS
-        //************************
-
-        //Any coupons selected AND we are NOT doing ANY coupon?
-
-        if (count($this->settings->getCouponFilter()) && ($this->settings->isAnyCoupons()) != true) {
-
-
-            //lets get a list of orders for this product
-            global $wpdb;
-
-            //Get the coupon names from the array
-            $ids = array_column($this->settings->getCouponFilter(), 'label');
-
-            //Now get the order ID's that have these coupons
-
-            if(!is_array($ids)){
-                $ids = array($ids);
-            }
-
-            $ids_count = count($ids);
-            $stringPlaceholders = implode(',', array_fill(0, $ids_count, '%s'));
-
-
-            $sql = $wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}woocommerce_order_items
-					WHERE order_item_type = 'coupon' AND order_item_name IN ({$stringPlaceholders})
-					GROUP BY order_id;", $ids);
-
-            $order_ids = $wpdb->get_col($sql);
-
-            //check we got some orders
-            if (is_array($order_ids) && count($order_ids) == 0) {
-                return false;
-            }
-
-            //if there are already some args then merge (intersect)
-            if (isset($args['post__in']) && is_array($args['post__in']) && count($args['post__in']) > 0) {
-                $args['post__in'] = array_intersect($args['post__in'], $order_ids);
-            } else {
-                $args['post__in'] = $order_ids;
-
-            }
-        }
-
-        //************************
-        // ANY COUPON CHECKBOX SET
-        //************************
-        if ($this->settings->isAnyCoupons() == true) {
-
-
-            $order_ids = $wpdb->get_col("SELECT order_id FROM {$wpdb->prefix}woocommerce_order_items
-            WHERE order_item_type = 'coupon'
-            GROUP BY order_id;");
-
-            //check we got some orders
-            if (is_array($order_ids) && count($order_ids) == 0) {
-                return false;
-            }
-
-            //if there are already some args then merge (intersect)
-            if (isset($args['post__in']) && is_array($args['post__in']) && count($args['post__in']) > 0) {
-                $args['post__in'] = array_intersect($args['post__in'], $order_ids);
-            } else {
-                $args['post__in'] = $order_ids;
-
-            }
-
-        }
         $this->args = $args;
-    }
-
-
-    /**
-     * Gets a list of order ID's for an array of product(s)
-     * @param $a
-     * @return array|bool
-     */
-    public function get_orders_for_products($a)
-    {
-        //lets get a list of orders for this product
-        global $wpdb;
-
-        if(!is_array($a)){
-            $a = array($a);
-        }
-
-        $products_count = count($a);
-        $stringPlaceholders = implode(',', array_fill(0, $products_count, '%s'));
-
-        $sql = $wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}woocommerce_order_itemmeta woim
-			        LEFT JOIN {$wpdb->prefix}woocommerce_order_items oi
-					ON woim.order_item_id = oi.order_item_id
-					WHERE meta_key = '_product_id' AND meta_value IN ({$stringPlaceholders})
-					GROUP BY order_id;", $a);
-
-        $order_ids = $wpdb->get_col($sql);
-
-        //check we got some orders
-        if (is_array($order_ids) && count($order_ids) == 0) {
-            return false;
-        }
-
-        return $order_ids;
-
-    }
-
-    /**
-     * Gets a list of order ID's for an array of product(s)
-     * @param $a
-     * @return array|bool
-     */
-    public function get_orders_for_categories($a)
-    {
-        //lets get a list of orders for these cats
-        global $wpdb;
-
-        if(!is_array($a)){
-            $a = array($a);
-        }
-
-        //First let's get the products for these categories
-        $categories_count = count($a);
-        $stringPlaceholders = implode(',', array_fill(0, $categories_count, '%s'));
-
-
-        $sql = $wpdb->prepare("SELECT ID FROM {$wpdb->prefix}posts
-			        WHERE ID IN (
-			        SELECT object_id from  {$wpdb->prefix}term_relationships
-			        WHERE term_taxonomy_id IN ({$stringPlaceholders})
-					)
-					GROUP BY ID", $a);
-
-        $product_ids = $wpdb->get_col($sql);
-
-        //check we got some orders
-        if (is_array($product_ids) && count($product_ids) == 0) {
-            return false;
-        }
-
-        //Now get the orders for these products
-        $product_ids = implode(",", $product_ids);
-        $order_ids = $this->get_orders_for_products($product_ids);
-        //check we got some orders
-        if (is_array($order_ids) && count($order_ids) == 0) {
-            return false;
-        }
-
-        return $order_ids;
-
     }
 
     public function generate_metaquery_args()
@@ -1388,7 +1189,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
         //We gather all the data
         $args = array();
         //Get the form fields
-        $data = stripcslashes(urldecode(sanitize_text_field($_POST['export-data'])));
+        $data = stripcslashes(urldecode(sanitize_text_field(wp_unslash($_POST['export-data'] ?? ''))));
 
         //Load them into a data object
         $settings = json_decode($data, true);
@@ -1402,7 +1203,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
 
         if(!empty($fields_to_export))
 		{
-            $step = sanitize_text_field( $_POST['step'] );
+            $step = sanitize_text_field(wp_unslash($_POST['step'] ?? ''));
 
             $settings['order_settings']['hook_code_valid'] = "";
             // save them
@@ -1440,7 +1241,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
      */
 
     public function JEMEXP_get_data_chunk($step)
-    {
+    {        
         //first step? Delete any transients from previous queries (just in case)
         //and also clear the temp file
         if ($step == 1) {
@@ -1448,7 +1249,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
 
             //If there is a file lingering around - zap it
             if (file_exists($this->tempFileName)) {
-                unlink($this->tempFileName);
+                wp_delete_file($this->tempFileName);
             }
         }
         //first lets see if we have a transient
@@ -1521,14 +1322,15 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
 
 
         //Add the result to the file
-        $file = fopen($this->tempFileName, "a");
+        //phpcs:ignore as it's more efficient than wp_filesystem
+        $file = fopen($this->tempFileName, "a"); //phpcs:ignore
 
         foreach ($result["data"] as $line) {
-            fputcsv($file, $line, $this->settings->getDelimiter());
+            fputcsv($file, $line, $this->settings->getDelimiter()); //phpcs:ignore
 
         }
         //$ret = fputcsv($file, $result["data"], $this->settings['delimiter'] );
-        fclose($file);
+        fclose($file); //phpcs:ignore
 
 
         $total_posts = $orders->found_posts;
@@ -1627,37 +1429,27 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
     {
         $this->load_transient();
 
-        $output_fileName = $this->settings->getFilename() . '_' . md5(uniqid(rand(), true));
+        $output_fileName = $this->settings->getFilename() . '_' . md5(uniqid(wp_rand(), true));
 
-        $output_fileName = str_replace('{{date}}', date('Y_m_d'), $output_fileName);
-        $output_fileName = str_replace('{{time}}', date('H_i_s'), $output_fileName);
+        $output_fileName = str_replace('{{date}}', gmdate('Y_m_d'), $output_fileName);
+        $output_fileName = str_replace('{{time}}', gmdate('H_i_s'), $output_fileName);
         $output_fileName = str_replace('{{type}}', $this->id, $output_fileName);
 
-        $file = fopen($this->tempFileName, 'r');
-        $contents = fread($file, filesize($this->tempFileName));
-        $r = fclose($file);
+        //not using wp_filesystem for performance reasons and access to php://output
+        $file = fopen($this->tempFileName, 'r'); //phpcs:ignore
+        $contents = fread($file, filesize($this->tempFileName)); //phpcs:ignore
+        $r = fclose($file); //phpcs:ignore
 
         $this->write_headers($output_fileName);
 
-        //Simon 3.0 - we now do this when we are complete!
-
-        //Create the CSV header (column) row
-        //do we need to create a new header row?
-//        $header = $this->create_header_order();
-//
-
-//        //Write out the header
-//        fputcsv($file, $header, $this->settings->getDelimiter());
-
-
         //now write it out
-        $file = @fopen('php://output', 'w');
+        $file = @fopen('php://output', 'w'); //phpcs:ignore
 
-        fwrite($file, $contents);
+        fwrite($file, $contents); //phpcs:ignore
 
-        fclose($file);
+        fclose($file); //phpcs:ignore
 
-        unlink($this->tempFileName);
+        wp_delete_file($this->tempFileName);
     }
 
 
@@ -1886,7 +1678,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
                 case 'product_categories' :
                     $product = $this->maybe_get_product_from_item($product, $item);
                     $cats = wc_get_product_category_list($item->get_product_id(), "|", " ", " ");
-                    $cats = strip_tags($cats);
+                    $cats = wp_strip_all_tags($cats);
                     array_push( $data, apply_filters('jemexp_field_product_categories',$cats,$order_details,$item) );
                     break;
 
@@ -2429,7 +2221,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
 
         global $wpdb;
 
-        $fields = $wpdb->get_results( $wpdb->prepare("select meta_key, meta_value from {$wpdb->postmeta} WHERE post_id = %d", $pdctId ), OBJECT_K );
+        $fields = $wpdb->get_results( $wpdb->prepare("select meta_key, meta_value from {$wpdb->postmeta} WHERE post_id = %d", $pdctId ), OBJECT_K ); //phpcs:ignore
 
 
         $ret = apply_filters('jemxp_get_product_meta_for_product', $fields);
@@ -2955,27 +2747,23 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
     function generate_export_fields_from_settings($id = "", $group = "", $datatype = "", $format = "", $label = "", $name = "")
     {
 
-        $ret = <<<ENDOFTEXT
-<li class='ui-draggable ui-draggable-handle export-selected-field' data-key='$id'>
-    <input type='hidden' class='jem-group' value='$group'>
-    <input type='hidden' class='jem-id' value='$id'>
-    <input type='hidden' class='jem-datatype' value='$datatype'>
-    <input type='hidden' class='jem-format' value='$format'>
+        $ret = '<li class="ui-draggable ui-draggable-handle export-selected-field" data-key="' . $id . '">
+    <input type="hidden" class="jem-group" value="' . $group . '">
+    <input type="hidden" class="jem-id" value="' . $id . '">
+    <input type="hidden" class="jem-datatype" value="' . $datatype . '">
+    <input type="hidden" class="jem-format" value="' . $format . '">
     <div class="selected-name">
         <i class="fa fa-bars" aria-hidden="true"></i>
-$name <i class='tooltip_icon fa fa-question-circle' aria-hidden='true' data-toggle='tooltip' data-placement='top' title='$id'></i></div>
+' . $name . '<i class="tooltip_icon fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="' . $id . '"></i></div>
     <div class="selected-placeholder">
-        <input type=text class='placeholder-input' value='$label'>
+        <input type=text class="placeholder-input" value="' . $label . '">
     </div>
 
     <div class="selected-delete">
         <span class="fa fa-trash jem-delete-export-field" aria-hidden="true"></span>
     </div>
 
-</li>
-
-
-ENDOFTEXT;
+</li>';
 
         return $ret;
     }
