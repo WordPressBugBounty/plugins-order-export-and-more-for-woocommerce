@@ -2,7 +2,7 @@
 Contributors: merlinmonmouth, webfactory
 Tags: export, woocommerce export, export orders, export products, orders export
 Requires at least: 5.0
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 3.26
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -15,6 +15,8 @@ An easy to use plugin that quickly exports data from your WooCommerce store into
 
 The export tool for WooCommerce has been designed to be easy to use. It will allow you to simply export the data you need.
 
+Boost your sales instantly by enabling customers to wrap orders with <a href="https://wordpress.org/plugins/woocommerce-gift-wrapper/">Gift Wrapper for WooCommerce</a>! Add it as a free service, or charge extra for wrapping.
+
 = WooCommerce Export Features =
 
 * Easy to set up and install
@@ -25,22 +27,19 @@ The export tool for WooCommerce has been designed to be easy to use. It will all
 * Export WooCommerce data in CSV format - easily used in Excel
 * Export Orders from WooCommerce
 
-> = PRO Version =
->
-> Our PRO version can be found [here](https://jem-products.com/woocommerce-export-orders-pro-plugin)
->
-> The PRO version provides these additional features
->
-> * Additional fields for Orders
-> * Export Customer Data
-> * Export Shipping Data
-> * Export Coupon Data
-> * Export Category Data
-> * Export Tags
-> * Schedule your exports
-> * Scheduled exports can be delivered via email or are available directly from your WooCommerce store
->
- > Find out more about our [Order Export for WooCommerce PRO](https://jem-products.com/woocommerce-export-orders-pro-plugin/)
+= PRO Version =
+<a href="https://jem-products.com/woocommerce-export-orders-pro-plugin">Order Export PRO</a> provides these additional features;
+
+* Additional fields for Orders
+* Export Customer Data
+* Export Shipping Data
+* Export Coupon Data
+* Export Category Data
+* Export Tags
+* Schedule your exports
+* Scheduled exports can be delivered via email or are available directly from your WooCommerce store
+
+Find out more about [Order Export for WooCommerce PRO](https://jem-products.com/woocommerce-export-orders-pro-plugin/)
 
 = Questions? =
 
