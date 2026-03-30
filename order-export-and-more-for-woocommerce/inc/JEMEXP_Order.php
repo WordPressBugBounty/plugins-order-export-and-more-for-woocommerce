@@ -134,6 +134,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
         $this->settings = $params;
         //2.0.6 @simon fixing the temp directory issue
         $dir = wp_upload_dir();
+
         $fileName = $dir['basedir'] . '/' . $this->tempFileName;
 
         $this->tempFileName = $fileName;
@@ -1358,6 +1359,7 @@ class JEMEXP_Order extends JEMEXP_BaseEntity
                 'result' => true
             );
 
+            wp_delete_file($this->tempFileName);
             return $ret;
 
         }

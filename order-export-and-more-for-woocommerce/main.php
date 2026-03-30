@@ -3,15 +3,16 @@
 Plugin Name: Order Export for WooCommerce
 Plugin URI: https://www.jem-products.com/
 Description: Export WooCommerce orders, products, and other data.
-Version: 3.26
+Version: 3.27
 Author: JEM Plugins
 Author URI: https://www.jem-products.com/
 Text Domain: order-export-and-more-for-woocommerce
-Tested up to: 6.9
-Requires PHP: 5.0
+License: GPLv2 or later
+Tested up to: 7.0
+Requires PHP: 5.4
 
 Copyright 2015 - 2022  JEM Products  (email: support@jem-products.com)
-Copyright 2021 - 2025  WebFactory Ltd  (email: support@webfactoryltd.com)
+Copyright 2021 - 2026  WebFactory Ltd  (email: support@webfactoryltd.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License, version 2, as
