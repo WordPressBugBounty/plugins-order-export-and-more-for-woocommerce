@@ -85,7 +85,7 @@ class JEMEXP_lite
     public function order_ajax_call()
     {
         check_ajax_referer('jemexp_saving_field');
-        if (!current_user_can('administrator')) {
+        if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error(__('You are not allowed to run this action.', 'order-export-and-more-for-woocommerce'));
         }
 
@@ -726,7 +726,7 @@ class JEMEXP_lite
     function save_settings()
     {
         check_ajax_referer('jemexp_saving_field');
-        if (!current_user_can('administrator')) {
+        if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error(__('You are not allowed to run this action.', 'order-export-and-more-for-woocommerce'));
         }
 

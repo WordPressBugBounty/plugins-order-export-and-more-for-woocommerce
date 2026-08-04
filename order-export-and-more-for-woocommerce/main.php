@@ -3,7 +3,7 @@
 Plugin Name: Order Export for WooCommerce
 Plugin URI: https://www.jem-products.com/
 Description: Export WooCommerce orders, products, and other data.
-Version: 3.27
+Version: 3.28
 Author: JEM Plugins
 Author URI: https://www.jem-products.com/
 Text Domain: order-export-and-more-for-woocommerce
@@ -66,6 +66,10 @@ add_action('admin_post_jemxp_download_batch_file', 'jemxp_process_batch_export_d
  */
 function jemxp_process_batch_export_download()
 {
+    if ( !current_user_can( 'manage_woocommerce' ) ) {
+        wp_die( esc_html__( 'You are not allowed to download exports.', 'order-export-and-more-for-woocommerce' ), 403 );
+    }
+
     $obj = new JEMEXP_Order(new JEMEXP_Export_Data());
     $obj->download_file();
     die();
